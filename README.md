@@ -18,6 +18,9 @@ Pet-проект на [React](https://react.dev/) с использование�
 ### Classnames
 [Classnames](https://www.npmjs.com/package/classnames) библиотека для динамических классов.
 
+### reselect
+[Reselect](https://www.npmjs.com/package/reselect) библиотека для создания мемоизированных функций "селектора". 
+
 # hero_panel_template
 Pet project in [React](https://react.dev/) using [Redux](https://redux.js.org/).
 
@@ -37,3 +40,6 @@ Pet project in [React](https://react.dev/) using [Redux](https://redux.js.org/).
 
 ### Classnames
 [Classnames](https://www.npmjs.com/package/classnames) library for dynamic classes.
+
+### reselect
+[Reselect](https://www.npmjs.com/package/reselect) a library for creating memoized "selector" functions. 

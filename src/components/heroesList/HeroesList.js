@@ -2,6 +2,7 @@ import {useHttp} from '../../hooks/http.hook';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
+import { createSelector } from 'reselect';
 
 import { heroesFetching, heroesFetched, heroesFetchingError, heroDeleted } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
@@ -10,7 +11,30 @@ import Spinner from '../spinner/Spinner';
 import './heroesList.scss';
 
 const HeroesList = () => {
-    const {filtertedHeroes, heroesLoadingStatus} = useSelector(state => state);
+    
+    const filtertedHeroesSelector = createSelector(
+        //cначала задаются состояния стора, которые необходимо передать как аргументы в последующую функцию
+        (state) => state.filters.activeFilter,
+        (state) => state.heroes.heroes,
+        //так работает библиотека reselect
+        //потом в ход идет функция, которая использует эти состояния
+        //внутри аргумента filters находится state.filters.activeFilter
+        //внутри аргумента heroes находится state.heroes.heroes
+        (filters, heroes) => {
+            //если активный фильтер равен all, то просто рендерится список без фильтрации
+            if(filters === 'all') {
+                return heroes
+            } else {
+                // формирование списка героев с учетом активного фильтра
+                return heroes.filter(item => item.element === filters)
+            }
+        }
+    );
+    //теперь в переменную filtertedHeroes помещается useSelector, для использования состояния стора, который содержит функцию созданную при помощи библиотеки reselect
+    //таким образом можно избежать повторного рендеринга, поскольку при помощи команды createSelector произошла мемоизация
+    //теперь если вдруг одно и тоже значение внутри фильтра, функция не будет вызываться просто так
+    const filtertedHeroes = useSelector(filtertedHeroesSelector)
+    const heroesLoadingStatus = useSelector(state => state.heroes.heroesLoadingStatus);
     const dispatch = useDispatch();
     const {request} = useHttp();
 

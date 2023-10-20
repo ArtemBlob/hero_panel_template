@@ -7,11 +7,11 @@ import { heroCreated } from "../../actions";
 
 const HeroesAddForm = () => {
     //состояния для контроля формы
-    const [heroName, setHeroName] = useState();
+    const [heroName, setHeroName] = useState('');
     const [heroDescr, setHeroDescr] = useState();
     const [heroElem, setHeroElem] = useState();
 
-    const {filters, filtersLoadingStatus} = useSelector(state => state);
+    const {filters, filtersLoadingStatus} = useSelector(state => state.filters);
     const dispatch = useDispatch();
     const {request} = useHttp();
 
