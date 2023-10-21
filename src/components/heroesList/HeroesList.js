@@ -2,16 +2,17 @@ import {useHttp} from '../../hooks/http.hook';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
+//библиотека для мемоизации функций селектора
 import { createSelector } from 'reselect';
 
-import { heroesFetching, heroesFetched, heroesFetchingError, heroDeleted } from '../../actions';
+import { fetchHeroes, heroDeleted } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 
 import './heroesList.scss';
 
 const HeroesList = () => {
-    
+    //принцип работы библиотеки reselect
     const filtertedHeroesSelector = createSelector(
         //cначала задаются состояния стора, которые необходимо передать как аргументы в последующую функцию
         (state) => state.filters.activeFilter,
@@ -39,11 +40,8 @@ const HeroesList = () => {
     const {request} = useHttp();
 
     useEffect(() => {
-        dispatch(heroesFetching());
-        request("http://localhost:3001/heroes")
-            .then(data => dispatch(heroesFetched(data)))
-            .catch(() => dispatch(heroesFetchingError()))
-
+        //функция сделанная благодаря ReduxThunk, которая в экшн передает функцию для выполнения запросов и вызова других экшенов в зависимости от состояния запроса
+        dispatch(fetchHeroes(request));
         // eslint-disable-next-line
     }, []);
 

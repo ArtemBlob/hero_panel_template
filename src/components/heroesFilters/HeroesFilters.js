@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
 
-import { filtersFetching, filtersFetched, filtersFetchingError, activeFilterChanged } from "../../actions";
+import { fetchFilters, activeFilterChanged } from "../../actions";
 import Spinner from "../spinner/Spinner";
 
 const HeroesFilters = () => {
@@ -13,10 +13,8 @@ const HeroesFilters = () => {
 
     // запрос на сервер для получения фильтров и смены состояния
     useEffect(() => {
-        dispatch(filtersFetching());
-        request("http://localhost:3001/filters")
-            .then(data => dispatch(filtersFetched(data)))
-            .catch(() => dispatch(filtersFetchingError()))
+         //функция сделанная благодаря ReduxThunk, которая в экшн передает функцию для выполнения запросов и вызова других экшенов в зависимости от состояния запроса
+        dispatch(fetchFilters(request));
          // eslint-disable-next-line
     }, []);
 

@@ -1,6 +1,9 @@
 import { legacy_createStore as createStore, combineReducers, compose, applyMiddleware  } from 'redux';
+//готовый мидлвейр, который позволяет передавать в диспетч функции
+import ReduxThunk from 'redux-thunk'
 import heroes from '../reducers/heroes';
 import filters from '../reducers/filters';
+
 
 //механизм, который работает как усилитель стора(enhancer), но изменяет только функцию dispatch называется middleware
 //принцип его работы
@@ -25,7 +28,7 @@ const store = createStore(
                     //если усилителей несколько, в redux есть специальная композиция compose, которая комбинирует функции, принимая их в кач-ве аргументов
                     compose(
                          //функция по загрузке middleware, может принимать в себя несколько аргументов
-                         applyMiddleware(stringMiddleware),
+                         applyMiddleware(stringMiddleware, ReduxThunk),
                          //строка для работы devtools 
                          window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()) );
 
