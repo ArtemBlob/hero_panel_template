@@ -1,6 +1,4 @@
-import { legacy_createStore as createStore, combineReducers, compose, applyMiddleware  } from 'redux';
-//готовый мидлвейр, который позволяет передавать в диспетч функции
-import ReduxThunk from 'redux-thunk'
+import { configureStore } from '@reduxjs/toolkit';
 import heroes from '../reducers/heroes';
 import filters from '../reducers/filters';
 
@@ -19,18 +17,18 @@ const stringMiddleware = () => (next) => (action) =>{
      return next(action) 
 }
 //механизм изменения стора позволяет изменить почти все, что угодно, однако зачастую используется именно в работе с dispatch
-
-//скомбинирование двух редьюсеров
-const store = createStore(
-                    combineReducers({heroes, filters}),
-                    //в оригинальную функцию createStore уже встроен механизм, что если вторым аргументом приходит какая-то функция
-                    //то она является усилителем store и она подменит механизмы
-                    //если усилителей несколько, в redux есть специальная композиция compose, которая комбинирует функции, принимая их в кач-ве аргументов
-                    compose(
-                         //функция по загрузке middleware, может принимать в себя несколько аргументов
-                         applyMiddleware(stringMiddleware, ReduxThunk),
-                         //строка для работы devtools 
-                         window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()) );
+//специальная функция redux toolkit позволяющая удобное создание store. 
+const store = configureStore({
+     //автоматическое комбинирование редьюсеров
+     reducer: {heroes, filters},
+     //в redux toolkit включены самые часто используемые middleware, то есть устанавливать отдельно, например, ReduxThunk не надо
+     //и чтобы их включить, нужно использовать команду getDefaultMiddleware, которая возвращает массив встроенных middleware, а затем при помощи concat добавить мой кастомный мидлвейр
+     middleware: getDefaultMiddleware => getDefaultMiddleware().concat(stringMiddleware),
+     //включение devtools, принимает булевое значение и чтобы devtools не работал при продакшен билд 
+     //принимает специальную конструкцию, которая автоматически вычисляет, нужно ли включать devtools или нет, условие, что если режим "не продакшн", то devtools будет работать
+     devTools: process.env.NODE_ENV !== 'production',
+     
+})
 
 export default store;
 
