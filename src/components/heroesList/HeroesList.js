@@ -5,7 +5,8 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group'
 //библиотека для мемоизации функций селектора
 import { createSelector } from 'reselect';
 
-import { fetchHeroes, heroDeleted } from '../../actions';
+import { fetchHeroes} from '../../actions';
+import { heroDeleted } from './heroesSlice';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 

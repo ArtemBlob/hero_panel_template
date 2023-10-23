@@ -13,9 +13,9 @@
       "element": "wind"
     },
     {
-      "id": 3,
-      "name": "Морской герой",
-      "description": "Как аквамен, но не из DC",
+      "id": "dd59ce16-f464-46d9-aa22-27283b8a0cc2",
+      "name": "Герой воды",
+      "description": "Манипуляция водой",
       "element": "water"
     }
   ],

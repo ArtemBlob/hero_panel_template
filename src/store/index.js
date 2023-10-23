@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import heroes from '../reducers/heroes';
-import filters from '../reducers/filters';
+import heroes from '../components/heroesList/heroesSlice';
+import filters from '../components/heroesFilters/filtersSlice';
 
 
 //механизм, который работает как усилитель стора(enhancer), но изменяет только функцию dispatch называется middleware
@@ -31,5 +31,3 @@ const store = configureStore({
 })
 
 export default store;
-
-window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
