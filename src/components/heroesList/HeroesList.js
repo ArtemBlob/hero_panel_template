@@ -3,10 +3,9 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {CSSTransition, TransitionGroup} from 'react-transition-group'
 //библиотека для мемоизации функций селектора
-import { createSelector } from 'reselect';
-
-import { fetchHeroes} from '../../actions';
-import { heroDeleted } from './heroesSlice';
+import { createSelector } from '@reduxjs/toolkit';
+//встроенная в redux toolKit библиотека reselect
+import { heroDeleted, fetchHeroes } from './heroesSlice';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 
@@ -42,7 +41,7 @@ const HeroesList = () => {
 
     useEffect(() => {
         //функция сделанная благодаря ReduxThunk, которая в экшн передает функцию для выполнения запросов и вызова других экшенов в зависимости от состояния запроса
-        dispatch(fetchHeroes(request));
+        dispatch(fetchHeroes());
         // eslint-disable-next-line
     }, []);
 

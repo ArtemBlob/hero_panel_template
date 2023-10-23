@@ -1,21 +1,19 @@
-import { useHttp } from "../../hooks/http.hook";
+
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
 
-import { fetchFilters } from "../../actions";
-import {filtersChanged} from './filtersSlice'
+import {filtersChanged, fetchFilters} from './filtersSlice'
 import Spinner from "../spinner/Spinner";
 
 const HeroesFilters = () => {
     const {filters, filtersLoadingStatus, activeFilter} = useSelector(state => state.filters);
     const dispatch = useDispatch();
-    const {request} = useHttp();
 
     // запрос на сервер для получения фильтров и смены состояния
     useEffect(() => {
          //функция сделанная благодаря ReduxThunk, которая в экшн передает функцию для выполнения запросов и вызова других экшенов в зависимости от состояния запроса
-        dispatch(fetchFilters(request));
+        dispatch(fetchFilters());
          // eslint-disable-next-line
     }, []);
 
