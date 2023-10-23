@@ -2,12 +2,16 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
+import store from '../../store';
 
-import {filtersChanged, fetchFilters} from './filtersSlice'
+import {filtersChanged, fetchFilters, selectAll} from './filtersSlice'
 import Spinner from "../spinner/Spinner";
 
 const HeroesFilters = () => {
-    const {filters, filtersLoadingStatus, activeFilter} = useSelector(state => state.filters);
+    const {filtersLoadingStatus, activeFilter} = useSelector(state => state.filters);
+    //получаем filters в форме массива, а не объекта entities, из специальной коллекции createEntityAdapter, благодаря специальному селектору selectAll
+    //фильты получаются из глобального стейта
+    const filters = selectAll(store.getState());
     const dispatch = useDispatch();
 
     // запрос на сервер для получения фильтров и смены состояния

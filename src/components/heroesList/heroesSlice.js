@@ -1,12 +1,18 @@
 //createSlice функция объединяющая в себе принцип действия createReduce и createAction
 //createAsyncThunk встроенный в тулкит мидлвейр ReduxThunk 
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+//createEntityAdapter предоставляет стандартизированный способ хранения данных путем преобразования коллекции в форму { ids: [], entities: {} }.
+//createSelector встроенная в redux toolKit библиотека reselect, которая кэширует результаты селекторов, чтобы избежать повторного рендеринга, если результаты не изменились
+import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { useHttp } from "../../hooks/http.hook";
 
-const initialState = {
-    heroes: [],
-    heroesLoadingStatus: 'idle',
-}
+//коме предопределения формы состояния, эта функция генерирует набор редукторов и селекторов, которые знают, как работать с такими данными.
+const heroesAdapter = createEntityAdapter();
+
+const initialState = heroesAdapter.getInitialState({
+    heroesLoadingStatus: 'idle'
+});
+
+
 //команда возвращает 3 экшн креэйтора, которые можно использовать для работы с асинхронными операциями pending, fulfilled, rejected
 export const fetchHeroes = createAsyncThunk(
     //тип действия функции в формате 'имя среза/тип действия'
@@ -33,12 +39,12 @@ const heroesSlice = createSlice({
         //функционал в целом как в createReducer, immer JS сам отслеживает иммутабельность и позволяет такой "мутабельный синтаксис"
         //однако, если написать return или вынести работу функции за фигурные скобки, immer JS передает управление иммутабельностью в руки разработчика
         heroCreated: (state, action) => {
-            //формирование массива героев с учетом добавления
-            state.heroes.push(action.payload);
+            //добавление нового героя в стейт, команда полученная благодаря createEntityAdapter
+            heroesAdapter.addOne(state, action.payload);
         },
         heroDeleted: (state, action) => {
-            //новый список геров без того, который был удален
-            state.heroes = state.heroes.filter(item => item.id !== action.payload) 
+            //удаление героя из стейта, команда полученная благодаря createEntityAdapter. Вторым аргументом, в removeOne является уникальный id
+            heroesAdapter.removeOne(state, action.payload);
         }
     },
     //экшн креэйторы созданыые при помощи createAsyncThunk помещяются в extraReducers, extraReducers принимает аргумент builder
@@ -49,7 +55,9 @@ const heroesSlice = createSlice({
             .addCase(fetchHeroes.pending, state => {state.heroesLoadingStatus = 'loading';})
             .addCase(fetchHeroes.fulfilled, (state, action) => {
                 state.heroesLoadingStatus = 'idle';
-                state.heroes = action.payload;
+                //setAll, метод созданный адаптером, принимает в себя массив новых сущностей или объект с определенным форматом и заменяет все, теми значениями, которые передаются.
+                //Первый аргумент state, то куда будут помещаться данные, в данном случае глобальный state. Второй аргумент, это то, что будет приходить в стейт
+                heroesAdapter.setAll(state, action.payload);
             })
             .addCase(fetchHeroes.rejected, state => {state.heroesLoadingStatus = 'error';})
             //метод, возвращающий дефолтный стейт, если ничего не изменилось и не был найден экшн
@@ -62,6 +70,32 @@ const heroesSlice = createSlice({
 const {actions, reducer} = heroesSlice;
 
 export default reducer;
+
+//Этот код экспортирует селектор selectAll, который использует getSelectors из библиотеки toolkit
+//Селектор selectAll используется для получения всех сущностей героев в форме массива из состояния Redux. 
+//Он принимает текущее состояние Redux в качестве аргумента и возвращает все сущности героев, хранящиеся в состоянии.
+//Таким образом, этот код предоставляет селектор для получения всех героев из состояния, в форме массива, а не объекта entities, каким он является внутри createEntityAdapter
+const {selectAll} = heroesAdapter.getSelectors(state => state.heroes);
+
+export const filtertedHeroesSelector = createSelector(
+    //библиотека reselect кэширует результат селектора
+    //cначала задаются состояния стора, которые необходимо передать как аргументы в последующую функцию
+    (state) => state.filters.activeFilter,
+    //передача функции, созданной при помощи createEntityAdapter
+    selectAll,
+    //потом в ход идет функция, которая использует эти состояния
+    //внутри аргумента filters находится state.filters.activeFilter
+    //внутри аргумента heroes находится selectAll, все герои, получаемые из стейта
+    (filters, heroes) => {
+        //если активный фильтер равен all, то просто рендерится список без фильтрации
+        if(filters === 'all') {
+            return heroes
+        } else {
+            // формирование списка героев с учетом активного фильтра
+            return heroes.filter(item => item.element === filters)
+        }
+    }
+);
 
 //деструктуризация и экспорт экшнкреаторов из объекта actions, которые сгенерировались при помощи createSlice
 export const {
